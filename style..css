@@ -1,0 +1,178 @@
+/* Estilos Globais e Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #121214;
+    color: #e1e1e6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background-color: #202024;
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 2px solid #29292e;
+}
+
+header h1 {
+    font-size: 1.6rem;
+    color: #4ea8de;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    font-size: 0.9rem;
+    color: #a8a8b3;
+}
+
+/* Layout Responsivo para Computadores */
+.container {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Painel de Controles Lateral */
+.controls-panel {
+    width: 380px;
+    background-color: #202024;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    border-right: 2px solid #29292e;
+    overflow-y: auto;
+}
+
+.control-group {
+    background-color: #121214;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #29292e;
+}
+
+.control-group h2 {
+    font-size: 1rem;
+    color: #00adb5;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #29292e;
+    padding-bottom: 0.3rem;
+}
+
+.counter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.counter-item:last-child { margin-bottom: 0; }
+.counter-item label { font-size: 0.9rem; color: #cccccc; }
+
+.counter-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.counter-buttons button {
+    background-color: #00adb5;
+    color: #ffffff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.counter-buttons button:hover { background-color: #008087; }
+.counter-buttons button:focus { outline: 2px solid #4ea8de; }
+.counter-buttons span { font-size: 1.3rem; font-weight: bold; min-width: 30px; text-align: center; }
+
+select {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #202024;
+    color: #e1e1e6;
+    border: 1px solid #29292e;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+select:focus { outline: 2px solid #00adb5; }
+
+/* Painel Informativo */
+.info-panel {
+    background-color: #1a1a1e;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #00adb5;
+}
+
+.info-panel h2 { font-size: 1.2rem; color: #ffffff; margin-bottom: 0.75rem; }
+.info-panel p { font-size: 0.9rem; margin-bottom: 0.5rem; color: #c4c4cc; }
+.info-panel strong { color: #4ea8de; }
+
+/* Quadrados da Legenda */
+.vector-legend {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #29292e;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.legend-item { display: flex; align-items: center; font-size: 0.8rem; color: #a8a8b3; }
+.color-box { width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; display: inline-block; }
+.color-box.center-atom { background-color: #9b5de5; }
+.color-box.bond { background-color: #ffffff; }
+.color-box.oxy-atom { background-color: #ff4d4d; }
+.color-box.lone { background-color: #ffb703; }
+.color-box.dipole { background-color: #ff4d4d; }
+
+/* Botão de Foto */
+.action-btn {
+    width: 100%;
+    padding: 0.85rem;
+    background-color: #2bb673;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.action-btn:hover { background-color: #219653; }
+
+/* Área do Gráfico 3D */
+.canvas-container {
+    flex: 1;
+    position: relative;
+    background-color: #0b0b0c;
+    min-height: 450px;
+}
+
+#canvas3d { width: 100%; height: 100%; }
+footer { background-color: #202024; padding: 1rem; text-align: center; font-size: 0.8rem; color: #7c7c8a; border-top: 2px solid #29292e; }
+
+/* Adaptador para Celulares e Tablets */
+@media (max-width: 768px) {
+    .container { flex-direction: column-reverse; }
+    .controls-panel { width: 100%; border-right: none; border-top: 2px solid #29292e; }
+    .canvas-container { height: 55vh; min-height: 350px; }
+}
