@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador 3D Prático de Geometria Molecular (VSEPR)</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Biblioteca gráfica 3D e controle de órbita do mouse/toque -->
+    <script src="https://unpkg.com"></script>
+</head>
+<body>
+    <header>
+        <h1>Simulador 3D Prático de Geometria Molecular (VSEPR)</h1>
+        <p>Explore as 20 geometrias moleculares adicionando ligações e pares de elétrons livres.</p>
+    </header>
+
+    <main class="container">
+        <!-- Painel de Controles Lateral -->
+        <section class="controls-panel" aria-label="Painel de Controle">
+            
+            <!-- Ferramenta de Controle Manual por Botões -->
+            <div class="control-group">
+                <h2>Controle Manual de Nuvens</h2>
+                
+                <div class="counter-item">
+                    <label id="label-ligantes">Ligações (Pares Ligantes):</label>
+                    <div class="counter-buttons">
+                        <button id="btn-sub-ligante" aria-label="Remover uma ligação">-</button>
+                        <span id="val-ligantes" aria-live="polite">2</span>
+                        <button id="btn-add-ligante" aria-label="Adicionar uma ligação">+</button>
+                    </div>
+                </div>
+
+                <div class="counter-item">
+                    <label id="label-livres">Pares de Elétrons Livres:</label>
+                    <div class="counter-buttons">
+                        <button id="btn-sub-libre" aria-label="Remover um par livre">-</button>
+                        <span id="val-livres" aria-live="polite">0</span>
+                        <button id="btn-add-libre" aria-label="Adicionar um par livre">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu de Seleção Direta com as 20 Opções -->
+            <div class="control-group">
+                <label for="select-geometria"><h2>Selecionar Geometria Direta (20 Opções)</h2></label>
+                <select id="select-geometria" aria-label="Selecione uma das vinte geometrias moleculares">
+                    <!-- Preenchido via JavaScript -->
+                </select>
+            </div>
+
+            <!-- Painel Informativo Dinâmico -->
+            <div class="info-panel" id="info-panel" aria-live="assertive">
+                <h2 id="info-nome">Geometria: Carregando...</h2>
+                <p><strong>Arranjo das Nuvens:</strong> <span id="info-arranjo">-</span></p>
+                <p><strong>Ângulo de Ligação Ideal:</strong> <span id="info-angulo">-</span></p>
+                <p><strong>Polaridade Teórica:</strong> <span id="info-polaridade">-</span></p>
+                
+                <!-- Legenda de Identidade Visual -->
+                <div class="vector-legend">
+                    <div class="legend-item"><span class="color-box center-atom"></span> Átomo Central</div>
+                    <div class="legend-item"><span class="color-box bond"></span> Ligação H</div>
+                    <div class="legend-item"><span class="color-box oxy-atom"></span> Elemento Eletronegativo</div>
+                    <div class="legend-item"><span class="color-box lone"></span> Par Livre (Neon)</div>
+                    <div class="legend-item"><span class="color-box dipole"></span> Vetor Dipolo (&mu;)</div>
+                </div>
+            </div>
+
+            <!-- Botão de Captura de Tela -->
+            <button id="btn-screenshot" class="action-btn" aria-label="Tirar foto da molécula 3D">📸 Tirar Foto da Molécula</button>
+        </section>
+
+        <!-- Área de Visualização 3D -->
+        <section class="canvas-container" aria-label="Visualização 3D da Molécula">
+            <div id="canvas3d" role="img" aria-label="Modelo 3D interativo da molécula."></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Desenvolvido seguindo regras rígidas de acessibilidade e design responsivo.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
