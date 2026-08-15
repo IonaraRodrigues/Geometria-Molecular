@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador 3D Prático de Geometria Molecular (VSEPR)</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Biblioteca gráfica 3D e controle de órbita do mouse/toque -->
+    <!-- Biblioteca gráfica 3D carregada de forma direta e segura -->
     <script src="https://unpkg.com"></script>
 </head>
 <body>
@@ -18,7 +18,6 @@
         <!-- Painel de Controles Lateral -->
         <section class="controls-panel" aria-label="Painel de Controle">
             
-            <!-- Ferramenta de Controle Manual por Botões -->
             <div class="control-group">
                 <h2>Controle Manual de Nuvens</h2>
                 
@@ -45,7 +44,7 @@
             <div class="control-group">
                 <label for="select-geometria"><h2>Selecionar Geometria Direta (20 Opções)</h2></label>
                 <select id="select-geometria" aria-label="Selecione uma das vinte geometrias moleculares">
-                    <!-- Preenchido via JavaScript -->
+                    <!-- Preenchido automaticamente pelo script abaixo -->
                 </select>
             </div>
 
@@ -56,17 +55,15 @@
                 <p><strong>Ângulo de Ligação Ideal:</strong> <span id="info-angulo">-</span></p>
                 <p><strong>Polaridade Teórica:</strong> <span id="info-polaridade">-</span></p>
                 
-                <!-- Legenda de Identidade Visual -->
                 <div class="vector-legend">
                     <div class="legend-item"><span class="color-box center-atom"></span> Átomo Central</div>
                     <div class="legend-item"><span class="color-box bond"></span> Ligação H</div>
                     <div class="legend-item"><span class="color-box oxy-atom"></span> Elemento Eletronegativo</div>
-                    <div class="legend-item"><span class="color-box lone"></span> Par Livre (Neon)</div>
+                    <div class="legend-item"><span class="color-box lone"></span> Par Livre</div>
                     <div class="legend-item"><span class="color-box dipole"></span> Vetor Dipolo (&mu;)</div>
                 </div>
             </div>
 
-            <!-- Botão de Captura de Tela -->
             <button id="btn-screenshot" class="action-btn" aria-label="Tirar foto da molécula 3D">📸 Tirar Foto da Molécula</button>
         </section>
 
@@ -80,6 +77,50 @@
         <p>Desenvolvido seguindo regras rígidas de acessibilidade e design responsivo.</p>
     </footer>
 
-    <script src="script.js"></script>
-</body>
-</html>
+    <!-- O SCRIPT AGORA RODA DIRETAMENTE AQUI DENTRO SEM DEPENDER DE OUTRO ARQUIVO -->
+    <script>
+        const moleculasDatabase = [
+            { ligantes: 2, livres: 0, arranjo: "Linear", nome: "Linear", angulo: "180°", polaridade: "Apolar (Se ligantes iguais)", coords: [[0,0,1.5], [0,0,-1.5]], livresCoords: [] },
+            { ligantes: 3, livres: 0, arranjo: "Trigonal Plana", nome: "Trigonal Plana", angulo: "120°", polaridade: "Apolar (Se ligantes iguais)", coords: [[0,1.5,0], [-1.3,-0.75,0], [1.3,-0.75,0]], livresCoords: [] },
+            { ligantes: 2, livres: 1, arranjo: "Trigonal Plana", nome: "Angular", angulo: "< 120°", polaridade: "Polar", coords: [[-1.3,-0.75,0], [1.3,-0.75,0]], livresCoords: [[0,1.5,0]] },
+            { ligantes: 4, livres: 0, arranjo: "Tetraédrica", nome: "Tetraédrica", angulo: "109.5°", polaridade: "Apolar (Se ligantes iguais)", coords: [[0,1.5,0], [1.41,-0.5,0], [-0.7,-0.5,1.22], [-0.7,-0.5,-1.22]], livresCoords: [] },
+            { ligantes: 3, livres: 1, arranjo: "Tetraédrica", nome: "Piramidal Trigonal", angulo: "~ 107°", polaridade: "Polar", coords: [[1.41,-0.5,0], [-0.7,-0.5,1.22], [-0.7,-0.5,-1.22]], livresCoords: [[0,1.5,0]] },
+            { ligantes: 2, livres: 2, arranjo: "Tetraédrica", nome: "Angular", angulo: "104.5°", polaridade: "Polar", coords: [[-0.7,-0.5,1.22], [-0.7,-0.5,-1.22]], livresCoords: [[0,1.5,0], [1.41,-0.5,0]] },
+            { ligantes: 5, livres: 0, arranjo: "Bipirâmide Trigonal", nome: "Bipirâmide Trigonal", angulo: "90° e 120°", polaridade: "Apolar (Se ligantes iguais)", coords: [[0,1.5,0], [0,-1.5,0], [1.5,0,0], [-0.75,0,1.3], [-0.75,0,-1.3]], livresCoords: [] },
+            { ligantes: 4, livres: 1, arranjo: "Bipirâmide Trigonal", nome: "Gangorra", angulo: "90° e < 120°", polaridade: "Polar", coords: [[0,1.5,0], [0,-1.5,0], [-0.75,0,1.3], [-0.75,0,-1.3]], livresCoords: [[1.5,0,0]] },
+            { ligantes: 3, livres: 2, arranjo: "Bipirâmide Trigonal", nome: "Forma de T", angulo: "~ 90°", polaridade: "Polar", coords: [[0,1.5,0], [0,-1.5,0], [-0.75,0,1.3]], livresCoords: [[1.5,0,0], [-0.75,0,-1.3]] },
+            { ligantes: 2, livres: 3, arranjo: "Bipirâmide Trigonal", nome: "Linear", angulo: "180°", polaridade: "Apolar (Se ligantes iguais)", coords: [[0,1.5,0], [0,-1.5,0]], livresCoords: [[1.5,0,0], [-0.75,0,1.3], [-0.75,0,-1.3]] },
+            { ligantes: 6, livres: 0, arranjo: "Octaédrica", nome: "Octaédrica", angulo: "90°", polaridade: "Apolar (Se ligantes iguais)", coords: [[0,1.5,0], [0,-1.5,0], [1.5,0,0], [-1.5,0,0], [0,0,1.5], [0,0,-1.5]], livresCoords: [] },
+            { ligantes: 5, livres: 1, arranjo: "Octaédrica", nome: "Piramidal Quadrada", angulo: "~ 90°", polaridade: "Polar", coords: [[0,1.5,0], [1.5,0,0], [-1.5,0,0], [0,0,1.5], [0,0,-1.5]], livresCoords: [[0,-1.5,0]] },
+            { ligantes: 4, livres: 2, arranjo: "Octaédrica", nome: "Quadrada Plana", angulo: "90°", polaridade: "Apolar (Se ligantes iguais)", coords: [[1.5,0,0], [-1.5,0,0], [0,0,1.5], [0,0,-1.5]], livresCoords: [[0,1.5,0], [0,-1.5,0]] },
+            { ligantes: 3, livres: 3, arranjo: "Octaédrica", nome: "Forma de T (Teórica)", angulo: "~ 90°", polaridade: "Polar", coords: [[1.5,0,0], [-1.5,0,0], [0,0,1.5]], livresCoords: [[0,1.5,0], [0,-1.5,0], [0,0,-1.5]] },
+            { ligantes: 2, livres: 4, arranjo: "Octaédrica", nome: "Linear (Teórica)", angulo: "180°", polaridade: "Apolar (Se ligantes iguais)", coords: [[0,0,1.5], [0,0,-1.5]], livresCoords: [[0,1.5,0], [0,-1.5,0], [1.5,0,0], [-1.5,0,0]] },
+            { ligantes: 1, livres: 0, arranjo: "Linear", nome: "Linear (Diatômica)", angulo: "Não aplicável", polaridade: "Polar", coords: [[0,0,1.5]], livresCoords: [] },
+            { ligantes: 1, livres: 1, arranjo: "Linear", nome: "Linear (Com 1 par livre)", angulo: "Não aplicável", polaridade: "Polar", coords: [[0,0,1.5]], livresCoords: [[0,0,-1.5]] },
+            { ligantes: 1, livres: 2, arranjo: "Linear", nome: "Linear (Com 2 pares livres)", angulo: "Não aplicável", polaridade: "Polar", coords: [[0,0,1.5]], livresCoords: [[0,1.5,0], [0,-1.5,0]] },
+            { ligantes: 1, livres: 3, arranjo: "Linear", nome: "Linear (Com 3 pares livres)", angulo: "Não aplicável", polaridade: "Polar", coords: [[0,0,1.5]], livresCoords: [[1.5,0,0], [-0.75,1.3,0], [-0.75,-1.3,0]] },
+            { ligantes: 1, livres: 4, arranjo: "Tetraédrica", nome: "Linear (Com 4 pares livres)", angulo: "Não aplicável", polaridade: "Polar", coords: [[0,0,1.5]], livresCoords: [[0,1.5,0], [1.41,-0.5,0], [-0.7,-0.5,1.22], [-0.7,-0.5,-1.22]] }
+        ];
+
+        let currentLigantes = 2, currentLivres = 0;
+        let scene, camera, renderer, moleculeGroup;
+        let btnSubLigante, btnAddLigante, btnSubLivre, btnAddLivre, valLigantes, valLivres, selectGeometria, infoNome, infoArranjo, infoAngulo, infoPolaridade, container3d, btnScreenshot;
+
+        function init() {
+            btnSubLigante = document.getElementById('btn-sub-ligante'); btnAddLigante = document.getElementById('btn-add-ligante');
+            btnSubLivre = document.getElementById('btn-sub-libre'); btnAddLivre = document.getElementById('btn-add-libre');
+            valLigantes = document.getElementById('val-ligantes'); valLivres = document.getElementById('val-livres');
+            selectGeometria = document.getElementById('select-geometria'); infoNome = document.getElementById('info-nome');
+            infoArranjo = document.getElementById('info-arranjo'); infoAngulo = document.getElementById('info-angulo');
+            infoPolaridade = document.getElementById('info-polaridade'); container3d = document.getElementById('canvas3d');
+            btnScreenshot = document.getElementById('btn-screenshot');
+
+            if (!selectGeometria || !container3d) {
+                setTimeout(init, 100);
+                return;
+            }
+
+            moleculasDatabase.sort((a,b) => (a.ligantes + a.livres) - (b.ligantes + b.livres));
+            selectGeometria.innerHTML = "";
+            moleculasDatabase.forEach((mol, idx) => {
+
