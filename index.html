@@ -369,157 +369,161 @@
             toastEl.style.opacity = 1;
             setTimeout(() => { toastEl.style.opacity = 0; }, 2000);
 
-            // Limpa o grupo 3D antigo antes de gerar o próximo arranjo
-            while(moleculeGroup.children.length > 0){ 
-                moleculeGroup.remove(moleculeGroup.children[0]); 
+                        // Limpa o grupo 3D antigo de forma segura antes de desenhar o novo
+            while(moleculeGroup.children.length > 0) { 
+                moleculeGroup.remove(moleculeGroup.children); 
             }
 
-            // 1. Instanciar Átomo Central
-            const centralMesh = new THREE.Mesh(coreGeo, atomCentralMat);
-            moleculeGroup.add(centralMesh);
+            // Cria o Átomo Central (Roxo CPK)
+            const centralAtom = new THREE.Mesh(coreGeo, new THREE.MeshStandardMaterial({ color: 0x9b5de5, roughness: 0.1, metalness: 0.2 }));
+            moleculeGroup.add(centralAtom);
 
-            // Obter direções padrão para o número de nuvens (número estérico)
-            const baseVectors = getVSEPRVectors(data.steric);
+            // Resgata os vetores direcionais perfeitos baseados na Teoria VSEPR
+            const directions = getVSEPRVectors(data.steric);
+            
+            let fX = 0, fY = 0, fZ = 0; // Contadores para o cálculo matemático da seta de polaridade
+            let ligantesDesenhados = 0;
 
-            // Organizar quais direções receberão átomos ligantes e quais receberão nuvens de elétrons livres
-            // Prioriza-se os planos equatoriais no número estérico 5 para os pares livres, de acordo com a regra VSEPR real
-            let directions = [...baseVectors];
-            if (data.steric === 5) {
-                // No arranjo bipirâmide trigonal, os pares livres entram primeiro nas posições equatoriais (índices 2, 3, 4)
-                const axial = [directions[0], directions[1]];
-                const equatorial = [directions[2], directions[3], directions[4]];
-                
-                const currentLigands = [];
-                const currentLones = [];
+            // Loop inteligente que separa o que é átomo real e o que é balão de elétron livre
+            directions.forEach((dir, i) => {
+                const targetPos = dir.clone().multiplyScalar(2.2); // Define o tamanho dos braços de ligação
 
-                let remainingLones = data.lone;
-                
-                // Distribuir elétrons livres nas posições equatoriais primeiro
-                for(let vec of equatorial) {
-                    if(remainingLones > 0) {
-                        currentLones.push(vec);
-                        remainingLones--;
-                    } else {
-                        currentLigands.push(vec);
+                if (ligantesDesenhados < data.lig) {
+                    // IMPLEMENTAÇÃO: Define cores dinâmicas reais para cada tipo de elemento do exemplo
+                    let corDoElemento = 0xffffff; // Branco para Hidrogênio padrão
+                    if (data.ex.includes("CO₂") || data.ex.includes("SO₂") || data.ex.includes("H₂O") || data.ex.includes("O₂")) {
+                        corDoElemento = 0xff4d4d; // Vermelho para Oxigênio
+                    } else if (data.ex.includes("BF₃") || data.ex.includes("PCl₅") || data.ex.includes("SF₄") || data.ex.includes("ClF₃") || data.ex.includes("XeF₂") || data.ex.includes("SF₆") || data.ex.includes("BrF₅") || data.ex.includes("XeF₄") || data.ex.includes("HF")) {
+                        corDoElemento = 0x00b4d8; // Azul/Verde para Halogênios (F, Cl)
                     }
-                }
-                // Distribuir o restante nas posições axiais
-                for(let vec of axial) {
-                    if(remainingLones > 0) {
-                        currentLones.push(vec);
-                        remainingLones--;
-                    } else {
-                        currentLigands.push(vec);
-                    }
-                }
 
-                // Renderizar Ligantes do Arranjo de 5 Nuvens
-                currentLigands.forEach(vec => renderLigand(vec, 1.8));
-                // Renderizar Elétrons Livres do Arranjo de 5 Nuvens
-                currentLones.forEach(vec => renderLonePair(vec, 1.4));
+                    // Desenha o Átomo Periférico
+                    const atomMatCustom = new THREE.MeshStandardMaterial({ color: corDoElemento, roughness: 0.2 });
+                    const ligMesh = new THREE.Mesh(ligGeo, atomMatCustom);
+                    ligMesh.position.copy(targetPos);
+                    moleculeGroup.add(ligMesh);
 
-            } else {
-                // Para os demais arranjos, a distribuição simples sequencial atende perfeitamente os formatos geométricos clássicos
-                for (let i = 0; i < data.steric; i++) {
-                    if (i < data.lig) {
-                        renderLigand(directions[i], 1.8);
-                    } else {
-                        renderLonePair(directions[i], 1.4);
-                    }
+                    // Desenha o tubo da ligação química (Cilindro)
+                    const bondMesh = criarCilindroBond(new THREE.Vector3(0,0,0), targetPos, 0.08, 0xaaaaaa);
+                    moleculeGroup.add(bondMesh);
+
+                    // Soma as forças eletrônicas no vetor dipolo
+                    fX += dir.x; fY += dir.y; fZ += dir.z;
+                    ligantesDesenhados++;
+                } else {
+                    // IMPLEMENTAÇÃO NEON: Pares livres em formato oval com material imune a sombras (luz própria)
+                    const loneMesh = new THREE.Mesh(loneGeo, new THREE.MeshBasicMaterial({ color: 0xffb703, transparent: true, opacity: 0.65 }));
+                    
+                    // Alonga a esfera transformando-a em formato realista de balão/lobo eletrônico
+                    loneMesh.scale.set(1, 1.6, 1);
+                    loneMesh.position.copy(dir.clone().multiplyScalar(1.6));
+                    loneMesh.lookAt(dir.clone().multiplyScalar(4));
+                    loneMesh.rotateX(Math.PI / 2);
+                    moleculeGroup.add(loneMesh);
+
+                    // Repulsão dos pares livres afeta a polaridade
+                    fX -= dir.x * 0.4; fY -= dir.y * 0.4; fZ -= dir.z * 0.4;
                 }
+            });
+
+            // IMPLEMENTAÇÃO DIPOLO: Renderiza a seta vermelha tridimensional se a geometria for Polar
+            const totalMagnitude = Math.sqrt(fX*fX + fY*fY + fZ*fZ);
+            // Lista rigorosa de geometrias polares da Teoria VSEPR
+            const geometriasPolares = ["Angular", "Piramidal Trigonal", "Gangorra", "Forma de T", "Pirâmide Quadrada", "Linear (Com 1 Par)", "Linear (Com 3 Pares)", "Linear (Com 4 Pares)", "Forma de T (Teórica)"];
+            
+            if (totalMagnitude > 0.1 && geometriasPolares.includes(data.name)) {
+                const vectorDirection = new THREE.Vector3(-fX, -fY, -fZ).normalize();
+                const dipoleArrow = new THREE.ArrowHelper(vectorDirection, new THREE.Vector3(0,0,0), 2.2, 0xff3333, 0.4, 0.18);
+                moleculeGroup.add(dipoleArrow);
             }
         }
 
-        // Desenha o átomo secundário e a haste cilíndrica de ligação química
-        function renderLigand(vector, distance) {
-            const targetPos = vector.clone().multiplyScalar(distance);
+                // Função auxiliar que calcula a rotação e escala perfeita para desenhar os tubos de ligações
+        function criarCilindroBond(pA, pB, r, cor) {
+            const distance = new THREE.Vector3().subVectors(pB, pA);
+            const cylinderLength = distance.length();
+            const geometry = new THREE.CylinderGeometry(r, r, cylinderLength, 16);
+            const material = new THREE.MeshStandardMaterial({ color: cor, roughness: 0.4 });
+            const mesh = new THREE.Mesh(geometry, material);
             
-            // Instancia o átomo periférico
-            const atomMesh = new THREE.Mesh(ligGeo, atomLiganteMat);
-            atomMesh.position.copy(targetPos);
-            moleculeGroup.add(atomMesh);
-
-            // Instancia e rotaciona o cilindro de ligação química perfeita entre os núcleos
-            const bondLength = distance;
-            const bondGeo = new THREE.CylinderGeometry(0.08, 0.08, bondLength, 16);
-            const bondMesh = new THREE.Mesh(bondGeo, bondMat);
-            
-            bondMesh.position.copy(targetPos).multiplyScalar(0.5);
-            bondMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), vector.clone().normalize());
-            moleculeGroup.add(bondMesh);
+            mesh.position.copy(pA).add(distance.multiplyScalar(0.5));
+            mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), distance.clone().normalize());
+            return mesh;
         }
 
-        // Desenha a nuvem eletrônica translúcida representando o par de elétrons isolados
-        function renderLonePair(vector, distance) {
-            const targetPos = vector.clone().multiplyScalar(distance);
-            const loneMesh = new THREE.Mesh(loneGeo, lonePairMat);
-            loneMesh.position.copy(targetPos);
-            moleculeGroup.add(loneMesh);
+        // IMPLEMENTAÇÃO: Criação dinâmica da Legenda Visual solicitada dentro da barra lateral
+        function injetarLegendaVisual() {
+            const painelInfo = document.getElementById("info-panel");
+            if (!painelInfo) return;
+            
+            const legendaHTML = `
+                <div style="margin-top:1.2rem; padding-top:0.6rem; border-top:1px dashed var(--border); display:flex; flex-wrap:wrap; gap:0.6rem;">
+                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#9b5de5; border-radius:3px; margin-right:5px; display:inline-block;"></span> Central</div>
+                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#ffffff; border-radius:3px; margin-right:5px; display:inline-block;"></span> Hidrogênio (H)</div>
+                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#00b4d8; border-radius:3px; margin-right:5px; display:inline-block;"></span> Halogênio (Cl/F)</div>
+                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#ff4d4d; border-radius:3px; margin-right:5px; display:inline-block;"></span> Oxigênio (O)</div>
+                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#ffb703; border-radius:3px; margin-right:5px; display:inline-block;"></span> Par Neon</div>
+                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#ff3333; border-radius:3px; margin-right:5px; display:inline-block;"></span> Seta Dipolo (&mu;)</div>
+                </div>`;
+            painelInfo.insertAdjacentHTML('beforeend', legendaHTML);
         }
 
-        // Event Listener para capturar interações no menu drop-down de seleção
-        selectEl.addEventListener("change", (e) => {
-            updateSimulation(parseInt(e.target.value));
-        });
+                // Configuração dos controles de arrastar com o dedo (Tablet) ou Mouse (PC)
+        function setupInteraction() {
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
 
-        // Carregar estado inicial (Opção 0: Dióxido de Carbono Linear)
-        updateSimulation(0);
+            const onStart = (x, y) => { isDragging = true; previousMousePosition = { x, y }; };
+            const onMove = (x, y) => {
+                if (!isDragging) return;
+                const deltaX = x - previousMousePosition.x;
+                const deltaY = y - previousMousePosition.y;
 
-        // Loop de Renderização e Animação Rotacional Suave (para percepção ideal em 3D)
+                moleculeGroup.rotation.y += deltaX * 0.01;
+                moleculeGroup.rotation.x += deltaY * 0.01;
+                previousMousePosition = { x, y };
+            };
+
+            canvasContainer.addEventListener('mousedown', (e) => onStart(e.clientX, e.clientY));
+            window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+            window.addEventListener('mouseup', () => isDragging = false);
+
+            canvasContainer.addEventListener('touchstart', (e) => {
+                if(e.touches.length === 1) onStart(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+            window.addEventListener('touchmove', (e) => {
+                if(e.touches.length === 1) onMove(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+            window.addEventListener('touchend', () => isDragging = false);
+
+            // Garante que o motor 3D recalcule o tamanho caso o tablet mude de posição (de pé ou deitado)
+            window.addEventListener('resize', () => {
+                camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight, false);
+            });
+        }
+
+        // Loop contínuo de animação que gera o efeito de rotação suave automática
         function animate() {
             requestAnimationFrame(animate);
-            
-            // Rotação suave contínua e passiva para facilitar o entendimento de profundidade espacial
-            moleculeGroup.rotation.y += 0.005;
-            moleculeGroup.rotation.x += 0.002;
-            
+            if (!isDragging) {
+                moleculeGroup.rotation.y += 0.003;
+            }
             renderer.render(scene, camera);
         }
-        animate();
 
-        // Gerenciamento e Adaptação Automática de Tela (Responsividade Inteligente)
-        window.addEventListener("resize", () => {
-            const width = canvasContainer.clientWidth;
-            const height = canvasContainer.clientHeight;
-            
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-            
-            renderer.setSize(width, height, false);
-        });
-
-        // Suporte opcional a interações básicas de arrastar por toque ou mouse para exploração autônoma
+        // Variável de controle compartilhada com a interação
         let isDragging = false;
-        let previousMousePosition = { x: 0, y: 0 };
 
-        canvas.addEventListener('mousedown', (e) => { isDragging = true; });
-        canvas.addEventListener('touchstart', (e) => { isDragging = true; previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY }; });
-
-        window.addEventListener('mouseup', () => { isDragging = false; });
-        window.addEventListener('touchend', () => { isDragging = false; });
-
-        canvas.addEventListener('mousemove', (e) => {
-            const deltaMove = { x: e.offsetX - previousMousePosition.x, y: e.offsetY - previousMousePosition.y };
-            if (isDragging) {
-                moleculeGroup.rotation.y += deltaMove.x * 0.01;
-                moleculeGroup.rotation.x += deltaMove.y * 0.01;
-            }
-            previousMousePosition = { x: e.offsetX, y: e.offsetY };
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const touch = e.touches[0];
-            const rect = canvas.getBoundingClientRect();
-            const x = touch.clientX - rect.left;
-            const y = touch.clientY - rect.top;
-            
-            const deltaMove = { x: x - previousMousePosition.x, y: y - previousMousePosition.y };
-            moleculeGroup.rotation.y += deltaMove.x * 0.01;
-            moleculeGroup.rotation.x += deltaMove.y * 0.01;
-            
-            previousMousePosition = { x: x, y: y };
-        });
+        // Dispara o simulador quando a página carrega por completo
+        window.onload = () => {
+            injetarLegendaVisual();
+            init();
+            selectEl.addEventListener('change', (e) => updateSimulation(e.target.value));
+        };
     </script>
 </body>
 </html>
+
+
