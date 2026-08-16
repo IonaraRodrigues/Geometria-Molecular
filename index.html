@@ -12,7 +12,6 @@
             --text-main: #ffffff;
             --text-muted: #a1a1aa;
             --accent: #4f46e5;
-            --accent-hover: #6366f1;
             --border: #3f3f46;
         }
 
@@ -20,7 +19,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
@@ -39,10 +38,7 @@
             border-bottom: 1px solid var(--border);
         }
 
-        h1 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
+        h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
 
         .main-container {
             display: flex;
@@ -52,13 +48,8 @@
         }
 
         @media (max-width: 900px) {
-            .main-container {
-                flex-direction: column;
-                height: auto;
-            }
-            .canvas-container {
-                height: 50vh !important;
-            }
+            .main-container { flex-direction: column; height: auto; }
+            .canvas-container { height: 50vh !important; }
         }
 
         .canvas-container {
@@ -68,22 +59,7 @@
             height: 100%;
         }
 
-        #canvas3d {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
-        }
+        #canvas3d { width: 100%; height: 100%; display: block; }
 
         .sidebar {
             width: 360px;
@@ -97,11 +73,7 @@
         }
 
         @media (max-width: 900px) {
-            .sidebar {
-                width: 100%;
-                border-left: none;
-                border-top: 1px solid var(--border);
-            }
+            .sidebar { width: 100%; border-left: none; border-top: 1px solid var(--border); }
         }
 
         .section-title {
@@ -120,93 +92,43 @@
             border: 1px solid var(--border);
         }
 
-        label {
-            display: block;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-        }
+        label { display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; }
 
         select {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: var(--bg-surface);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 1rem;
-            cursor: pointer;
-            outline: none;
+            width: 100%; padding: 0.75rem; background-color: var(--bg-surface); color: var(--text-main);
+            border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; cursor: pointer; outline: none;
         }
+        select:focus { border-color: var(--accent); }
 
-        select:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.4);
-        }
-
-        .info-panel {
-            background-color: rgba(79, 70, 229, 0.1);
-            border: 1px solid var(--accent);
-            border-radius: 8px;
-            padding: 1rem;
-        }
-
-        .info-row {
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-        }
-
-        .info-row strong {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .info-val {
-            color: #f3f4f6;
-            font-weight: bold;
-            display: inline-block;
-            margin-left: 0.25rem;
-        }
+        .info-panel { background-color: rgba(79, 70, 229, 0.1); border: 1px solid var(--accent); border-radius: 8px; padding: 1rem; }
+        .info-row { margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .info-row strong { color: var(--text-muted); font-weight: 500; }
+        .info-val { color: #f3f4f6; font-weight: bold; display: inline-block; margin-left: 0.25rem; }
 
         .accessibility-toast {
-            position: absolute;
-            bottom: 1rem;
-            left: 1rem;
-            background: rgba(0,0,0,0.8);
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 10;
+            position: absolute; bottom: 1rem; left: 1rem; background: rgba(0,0,0,0.8); color: #fff;
+            padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.85rem; pointer-events: none; opacity: 0; z-index: 10;
         }
     </style>
-    <!-- Incluindo Three.js de um CDN público estável -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com"></script>
 </head>
 <body>
-
     <header>
         <h1>Simulador 3D Prático de Geometria Molecular (VSEPR)</h1>
         <p style="color: var(--text-muted); font-size: 0.9rem;">Acessível e adaptável para qualquer tela</p>
     </header>
 
     <main class="main-container">
-        <!-- Área Visual 3D -->
-        <div class="canvas-container" role="img" id="canvas-container" aria-label="Visualização 3D da molécula selecionada. Use os controles da barra lateral para alterar o arranjo geométrico.">
+        <div class="canvas-container" role="img" id="canvas-container" aria-label="Visualização 3D da molécula.">
             <canvas id="canvas3d"></canvas>
             <div id="toast" class="accessibility-toast" aria-live="polite"></div>
         </div>
 
-        <!-- Painel de Controles Lateral -->
         <section class="sidebar" aria-label="Painel de Controle e Informações">
             <div class="control-group">
                 <h2 class="section-title">1. Escolha a Configuração (20 Opções)</h2>
-                <label id="molecule-select-label" for="molecule-select">Selecione o arranjo de pares eletrônicos (Teoria VSEPR):</label>
+                <label id="molecule-select-label" for="molecule-select">Selecione o arranjo de pares eletrônicos:</label>
                 <select id="molecule-select" aria-labelledby="molecule-select-label">
-                    <!-- Preenchido dinamicamente via JS com as 20 combinações matemáticas da Teoria VSEPR -->
                 </select>
             </div>
 
@@ -224,306 +146,165 @@
         </section>
     </main>
 
-    <script>
-        // Banco de dados completo da VSEPR contendo todas as combinações matemáticas de nuvens (2 a 6)
+        <script>
+        // Banco de dados oficial VSEPR com coordenadas espaciais unificadas
         const vseprData = [
-            // 2 Nuvens
-            { steric: 2, lig: 2, lone: 0, name: "Linear", angle: "180°", arr: "Linear", ex: "CO₂ (Dióxido de Carbono)" },
-            // 3 Nuvens
-            { steric: 3, lig: 3, lone: 0, name: "Trigonal Plana", angle: "120°", arr: "Trigonal Plana", ex: "BF₃ (Trifluoreto de Boro)" },
-            { steric: 3, lig: 2, lone: 1, name: "Angular", angle: "< 120°", arr: "Trigonal Plana", ex: "SO₂ (Dióxido de Enxofre)" },
-            // 4 Nuvens
-            { steric: 4, lig: 4, lone: 0, name: "Tetraédrica", angle: "109.5°", arr: "Tetraédrica", ex: "CH₄ (Metano)" },
-            { steric: 4, lig: 3, lone: 1, name: "Piramidal Trigonal", angle: "107°", arr: "Tetraédrica", ex: "NH₃ (Amônia)" },
-            { steric: 4, lig: 2, lone: 2, name: "Angular", angle: "104.5°", arr: "Tetraédrica", ex: "H₂O (Água)" },
-            // 5 Nuvens
-            { steric: 5, lig: 5, lone: 0, name: "Bipirâmide Trigonal", angle: "90°, 120°", arr: "Bipirâmide Trigonal", ex: "PCl₅ (Pentacloreto de Fósforo)" },
-            { steric: 5, lig: 4, lone: 1, name: "Gangorra", angle: "90°, 120°", arr: "Bipirâmide Trigonal", ex: "SF₄ (Tetrafluoreto de Enxofre)" },
-            { steric: 5, lig: 3, lone: 2, name: "Forma de T", angle: "90°", arr: "Bipirâmide Trigonal", ex: "ClF₃ (Trifluoreto de Cloro)" },
-            { steric: 5, lig: 2, lone: 3, name: "Linear", angle: "180°", arr: "Bipirâmide Trigonal", ex: "XeF₂ (Difluoreto de Xenônio)" },
-            // 6 Nuvens
-            { steric: 6, lig: 6, lone: 0, name: "Octaédrica", angle: "90°", arr: "Octaédrica", ex: "SF₆ (Hexafluoreto de Enxofre)" },
-            { steric: 6, lig: 5, lone: 1, name: "Pirâmide Quadrada", angle: "90°", arr: "Octaédrica", ex: "BrF₅ (Pentafluoreto de Bromo)" },
-            { steric: 6, lig: 4, lone: 2, name: "Quadrada Plana", angle: "90°", arr: "Octaédrica", ex: "XeF₄ (Tetrafluoreto de Xenônio)" },
-            // Adições teóricas / intermediárias para completar as 20 combinações de estudo VSEPR
-            { steric: 2, lig: 1, lone: 1, name: "Linear (Diatômica)", angle: "180°", arr: "Linear", ex: "HF (Fluoreto de Hidrogênio)" },
-            { steric: 3, lig: 1, lone: 2, name: "Linear (Diatômica)", angle: "180°", arr: "Trigonal Plana", ex: "O₂ (Oxigênio)" },
-            { steric: 4, lig: 1, lone: 3, name: "Linear (Diatômica)", angle: "180°", arr: "Tetraédrica", ex: "HCl (Ácido Clorídrico)" },
-            { steric: 5, lig: 1, lone: 4, name: "Linear (Diatômica)", angle: "180°", arr: "Bipirâmide Trigonal", ex: "Espécie teórica" },
-            { steric: 6, lig: 3, lone: 3, name: "Forma de T (Teórica)", angle: "< 90°", arr: "Octaédrica", ex: "Íon teórico" },
-            { steric: 6, lig: 2, lone: 4, name: "Linear", angle: "180°", arr: "Octaédrica", ex: "Íon complexo ICl₂⁻" },
-            { steric: 6, lig: 1, lone: 5, name: "Linear (Diatômica)", angle: "180°", arr: "Octaédrica", ex: "Espécie teórica" }
+            { steric: 2, lig: 2, lone: 0, name: "Linear", angle: "180°", arr: "Linear", polarity: "Apolar", ex: "CO₂ (Dióxido de Carbono)", coords: [[0,0,1.2], [0,0,-1.2]], loneCoords: [], atomColors: [0xff4d4d, 0xff4d4d] },
+            { steric: 3, lig: 3, lone: 0, name: "Trigonal Plana", angle: "120°", arr: "Trigonal Plana", polarity: "Apolar", ex: "BF₃ (Trifluoreto de Boro)", coords: [[0,1.2,0], [-1.04,-0.6,0], [1.04,-0.6,0]], loneCoords: [], atomColors: [0x00b4d8, 0x00b4d8, 0x00b4d8] },
+            { steric: 3, lig: 2, lone: 1, name: "Angular", angle: "< 120°", arr: "Trigonal Plana", polarity: "Polar", ex: "SO₂ (Dióxido de Enxofre)", coords: [[-1.04,-0.6,0], [1.04,-0.6,0]], loneCoords: [[0,1.2,0]], atomColors: [0xff4d4d, 0xff4d4d] },
+            { steric: 4, lig: 4, lone: 0, name: "Tetraédrica", angle: "109.5°", arr: "Tetraédrica", polarity: "Apolar", ex: "CH₄ (Metano)", coords: [[0,1.2,0], [1.13,-0.4,0], [-0.56,-0.4,0.98], [-0.56,-0.4,-0.98]], loneCoords: [], atomColors: [0xffffff, 0xffffff, 0xffffff, 0xffffff] },
+            { steric: 4, lig: 3, lone: 1, name: "Piramidal Trigonal", angle: "107°", arr: "Tetraédrica", polarity: "Polar", ex: "NH₃ (Amônia)", coords: [[1.13,-0.4,0], [-0.56,-0.4,0.98], [-0.56,-0.4,-0.98]], loneCoords: [[0,1.2,0]], atomColors: [0xffffff, 0xffffff, 0xffffff] },
+            { steric: 4, lig: 2, lone: 2, name: "Angular", angle: "104.5°", arr: "Tetraédrica", polarity: "Polar", ex: "H₂O (Água)", coords: [[-0.56,-0.4,0.98], [-0.56,-0.4,-0.98]], loneCoords: [[0,1.2,0], [1.13,-0.4,0]], atomColors: [0xffffff, 0xffffff] },
+            { steric: 5, lig: 5, lone: 0, name: "Bipirâmide Trigonal", angle: "90° e 120°", arr: "Bipirâmide Trigonal", polarity: "Apolar", ex: "PCl₅ (Pentacloreto de Fósforo)", coords: [[0,1.2,0], [0,-1.2,0], [1.2,0,0], [-0.6,0,1.04], [-0.6,0,-1.04]], loneCoords: [], atomColors: [0x00b4d8, 0x00b4d8, 0x00b4d8, 0x00b4d8, 0x00b4d8] },
+            { steric: 5, lig: 4, lone: 1, name: "Gangorra", angle: "90° e < 120°", arr: "Bipirâmide Trigonal", polarity: "Polar", ex: "SF₄ (Tetrafluoreto de Enxofre)", coords: [[0,1.2,0], [0,-1.2,0], [-0.6,0,1.04], [-0.6,0,-1.04]], loneCoords: [[1.2,0,0]], atomColors: [0x00b4d8, 0x00b4d8, 0x00b4d8, 0x00b4d8] },
+            { steric: 5, lig: 3, lone: 2, name: "Forma de T", angle: "~ 90°", arr: "Bipirâmide Trigonal", polarity: "Polar", ex: "ClF₃ (Trifluoreto de Cloro)", coords: [[0,1.2,0], [0,-1.2,0], [-0.6,0,1.04]], loneCoords: [[1.2,0,0], [-0.6,0,-1.04]], atomColors: [0x00b4d8, 0x00b4d8, 0x00b4d8] },
+            { steric: 5, lig: 2, lone: 3, name: "Linear", angle: "180°", arr: "Bipirâmide Trigonal", polarity: "Apolar", ex: "XeF₂ (Difluoreto de Xenônio)", coords: [[0,1.2,0], [0,-1.2,0]], loneCoords: [[1.2,0,0], [-0.6,0,1.04], [-0.6,0,-1.04]], atomColors: [0x00b4d8, 0x00b4d8] },
+            { steric: 6, lig: 6, lone: 0, name: "Octaédrica", angle: "90°", arr: "Octaédrica", polarity: "Apolar", ex: "SF₆ (Hexafluoreto de Enxofre)", coords: [[0,1.2,0], [0,-1.2,0], [1.2,0,0], [-1.2,0,0], [0,0,1.2], [0,0,-1.2]], loneCoords: [], atomColors: [0x00b4d8, 0x00b4d8, 0x00b4d8, 0x00b4d8, 0x00b4d8, 0x00b4d8] },
+            { steric: 6, lig: 5, lone: 1, name: "Piramidal Quadrada", angle: "~ 90°", arr: "Octaédrica", polarity: "Polar", ex: "BrF₅ (Pentafluoreto de Bromo)", coords: [[0,1.2,0], [1.2,0,0], [-1.2,0,0], [0,0,1.2], [0,0,-1.2]], loneCoords: [[0,-1.2,0]], atomColors: [0x00b4d8, 0x00b4d8, 0x00b4d8, 0x00b4d8, 0x00b4d8] },
+            { steric: 6, lig: 4, lone: 2, name: "Quadrada Plana", angle: "90°", arr: "Octaédrica", polarity: "Apolar", ex: "XeF₄ (Tetrafluoreto de Xenônio)", coords: [[1.2,0,0], [-1.2,0,0], [0,0,1.2], [0,0,-1.2]], loneCoords: [[0,1.2,0], [0,-1.2,0]], atomColors: [0x00b4d8, 0x00b4d8, 0x00b4d8, 0x00b4d8] },
+            { steric: 6, lig: 3, lone: 3, name: "Forma de T (Teórica)", angle: "~ 90°", arr: "Octaédrica", polarity: "Polar", ex: "Interhalogênios Complexos", coords: [[1.2,0,0], [-1.2,0,0], [0,0,1.2]], loneCoords: [[0,1.2,0], [0,-1.2,0], [0,0,-1.2]], atomColors: [0x00b4d8, 0x00b4d8, 0x00b4d8] },
+            { steric: 6, lig: 2, lone: 4, name: "Linear (Teórica)", angle: "180°", arr: "Octaédrica", polarity: "Apolar", ex: "Arranjos Teóricos Nobres", coords: [[0,0,1.2], [0,0,-1.2]], loneCoords: [[0,1.2,0], [0,-1.2,0], [1.2,0,0], [-1.2,0,0]], atomColors: [0x00b4d8, 0x00b4d8] },
+            { steric: 1, lig: 1, lone: 0, name: "Linear (Diatômica)", angle: "Não aplicável", arr: "Linear", polarity: "Polar", ex: "HCl (Cloreto de Hidrogênio)", coords: [[0,0,1.2]], loneCoords: [], atomColors: [0xffffff] },
+            { steric: 2, lig: 1, lone: 1, name: "Linear (Com 1 Par)", angle: "Não aplicável", arr: "Linear", polarity: "Polar", ex: "CO (Monóxido de Carbono)", coords: [[0,0,1.2]], loneCoords: [[0,0,-1.2]], atomColors: [0xff4d4d] },
+            { steric: 3, lig: 1, lone: 2, name: "Linear (Com 2 Pares)", angle: "Não aplicável", arr: "Linear", polarity: "Apolar", ex: "O₂ (Gás Oxigênio)", coords: [[0,0,1.2]], loneCoords: [[0,1.2,0], [0,-1.2,0]], atomColors: [0xff4d4d] },
+            { steric: 4, lig: 1, lone: 3, name: "Linear (Com 3 Pares)", angle: "Não aplicável", arr: "Linear", polarity: "Polar", ex: "HF (Fluoreto de Hidrogênio)", coords: [[0,0,1.2]], loneCoords: [[1.2,0,0], [-0.6,1.04,0], [-0.6,-1.04,0]], atomColors: [0xffffff] },
+            { steric: 5, lig: 1, lone: 4, name: "Linear (Com 4 Pares)", angle: "Não aplicável", arr: "Tetraédrica", polarity: "Polar", ex: "Modelos Avançados Computacionais", coords: [[0,0,1.2]], loneCoords: [[0,1.2,0], [1.13,-0.4,0], [-0.56,-0.4,0.98], [-0.56,-0.4,-0.98]], atomColors: [0x00b4d8] }
         ];
 
-        // Inicialização de Elementos HTML
-        const selectEl = document.getElementById("molecule-select");
-        const valGeometria = document.getElementById("val-geometria");
-        const valAngulo = document.getElementById("val-angulo");
-        const valLigantes = document.getElementById("val-ligantes");
-        const valLivres = document.getElementById("val-livres");
-        const valArranjo = document.getElementById("val-arranjo");
-        const valExemplo = document.getElementById("val-exemplo");
-        const canvasContainer = document.getElementById("canvas-container");
-        const toastEl = document.getElementById("toast");
+        let scene, camera, renderer, moleculeGroup;
+        const select = document.getElementById('molecule-select');
+        const container3d = document.getElementById('canvas-container');
+        const toast = document.getElementById('toast');
 
-        // Alimentar o Select com as 20 opções estruturadas de forma inteligível
-        vseprData.forEach((item, index) => {
-            const option = document.createElement("option");
-            option.value = index;
-            option.textContent = `Nuvens: ${item.steric} → Ligantes: ${item.lig} | Livres: ${item.lone} (${item.name})`;
-            selectEl.appendChild(option);
-        });
-
-        // Configuração Inicial do Ambiente 3D (Three.js)
-        const canvas = document.getElementById("canvas3d");
-        const scene = new THREE.Scene();
-        
-        // Câmera Responsiva adaptada para distâncias comuns em dispositivos móveis
-        const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-        camera.position.set(0, 0, 8);
-
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
-
-        // Iluminação de Estúdio
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-
-        const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
-        dirLight1.position.set(5, 5, 5);
-        scene.add(dirLight1);
-
-        const dirLight2 = new THREE.DirectionalLight(0x4f46e5, 0.3);
-        dirLight2.position.set(-5, -5, 3);
-        scene.add(dirLight2);
-
-        // Grupo principal que conterá os elementos tridimensionais da molécula ativa
-        const moleculeGroup = new THREE.Group();
-        scene.add(moleculeGroup);
-
-        // Materiais reutilizáveis otimizados para performance móvel
-        const atomCentralMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.2, metalness: 0.1 });
-        const atomLiganteMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.3 });
-        const lonePairMat = new THREE.MeshStandardMaterial({ color: 0xa1a1aa, transparent: true, opacity: 0.5, wireframe: false });
-        const bondMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
-
-        // Geometrias Base reutilizáveis
-        const coreGeo = new THREE.SphereGeometry(0.6, 32, 32);
-        const ligGeo = new THREE.SphereGeometry(0.4, 32, 32);
-        const loneGeo = new THREE.SphereGeometry(0.35, 16, 16); // Balão/par livre
-
-        // Função geradora de direções matemáticas (vetores) distribuídas uniformemente no espaço tridimensional
-        function getVSEPRVectors(stericCount) {
-            const vectors = [];
-            if (stericCount === 2) {
-                vectors.push(new THREE.Vector3(0, 1, 0));
-                vectors.push(new THREE.Vector3(0, -1, 0));
-            } else if (stericCount === 3) {
-                for (let i = 0; i < 3; i++) {
-                    let angle = (i * 2 * Math.PI) / 3;
-                    vectors.push(new THREE.Vector3(Math.cos(angle), Math.sin(angle), 0));
-                }
-            } else if (stericCount === 4) {
-                vectors.push(new THREE.Vector3(0, 1, 0));
-                vectors.push(new THREE.Vector3(Math.sqrt(8/9), -1/3, 0));
-                vectors.push(new THREE.Vector3(-Math.sqrt(2/9), -1/3, Math.sqrt(2/3)));
-                vectors.push(new THREE.Vector3(-Math.sqrt(2/9), -1/3, -Math.sqrt(2/3)));
-            } else if (stericCount === 5) {
-                // Axiais
-                vectors.push(new THREE.Vector3(0, 1, 0));
-                vectors.push(new THREE.Vector3(0, -1, 0));
-                // Equatoriais
-                for (let i = 0; i < 3; i++) {
-                    let angle = (i * 2 * Math.PI) / 3;
-                    vectors.push(new THREE.Vector3(Math.cos(angle) * 0.9, 0, Math.sin(angle) * 0.9));
-                }
-            } else if (stericCount === 6) {
-                vectors.push(new THREE.Vector3(0, 1, 0));
-                vectors.push(new THREE.Vector3(0, -1, 0));
-                vectors.push(new THREE.Vector3(1, 0, 0));
-                vectors.push(new THREE.Vector3(-1, 0, 0));
-                vectors.push(new THREE.Vector3(0, 0, 1));
-                vectors.push(new THREE.Vector3(0, 0, -1));
-            }
-            return vectors;
-        }
-
-        // Reconstrói a visualização 3D dinamicamente com base no item selecionado no menu dropdown
-        function updateSimulation(index) {
-            const data = vseprData[index];
-
-            // Atualização dos textos de acessibilidade e informação
-            valGeometria.textContent = data.name;
-            valAngulo.textContent = data.angle;
-            valLigantes.textContent = data.lig;
-            valLivres.textContent = data.lone;
-            valArranjo.textContent = data.arr;
-            valExemplo.textContent = data.ex;
-
-            // Atualizar leitor de telas via anúncio dinâmico aria-live
-            const screenReaderText = `Molécula alterada. Geometria ${data.name}, com ângulo de ${data.angle}. Possui ${data.lig} ligações e ${data.lone} pares livres.`;
-            canvasContainer.setAttribute("aria-label", `Estrutura tridimensional de uma geometria ${data.name}. ` + screenReaderText);
-            
-            toastEl.textContent = `${data.name} (${data.angle})`;
-            toastEl.style.opacity = 1;
-            setTimeout(() => { toastEl.style.opacity = 0; }, 2000);
-
-                        // Limpa o grupo 3D antigo de forma segura antes de desenhar o novo
-            while(moleculeGroup.children.length > 0) { 
-                moleculeGroup.remove(moleculeGroup.children); 
-            }
-
-            // Cria o Átomo Central (Roxo CPK)
-            const centralAtom = new THREE.Mesh(coreGeo, new THREE.MeshStandardMaterial({ color: 0x9b5de5, roughness: 0.1, metalness: 0.2 }));
-            moleculeGroup.add(centralAtom);
-
-            // Resgata os vetores direcionais perfeitos baseados na Teoria VSEPR
-            const directions = getVSEPRVectors(data.steric);
-            
-            let fX = 0, fY = 0, fZ = 0; // Contadores para o cálculo matemático da seta de polaridade
-            let ligantesDesenhados = 0;
-
-            // Loop inteligente que separa o que é átomo real e o que é balão de elétron livre
-            directions.forEach((dir, i) => {
-                const targetPos = dir.clone().multiplyScalar(2.2); // Define o tamanho dos braços de ligação
-
-                if (ligantesDesenhados < data.lig) {
-                    // IMPLEMENTAÇÃO: Define cores dinâmicas reais para cada tipo de elemento do exemplo
-                    let corDoElemento = 0xffffff; // Branco para Hidrogênio padrão
-                    if (data.ex.includes("CO₂") || data.ex.includes("SO₂") || data.ex.includes("H₂O") || data.ex.includes("O₂")) {
-                        corDoElemento = 0xff4d4d; // Vermelho para Oxigênio
-                    } else if (data.ex.includes("BF₃") || data.ex.includes("PCl₅") || data.ex.includes("SF₄") || data.ex.includes("ClF₃") || data.ex.includes("XeF₂") || data.ex.includes("SF₆") || data.ex.includes("BrF₅") || data.ex.includes("XeF₄") || data.ex.includes("HF")) {
-                        corDoElemento = 0x00b4d8; // Azul/Verde para Halogênios (F, Cl)
-                    }
-
-                    // Desenha o Átomo Periférico
-                    const atomMatCustom = new THREE.MeshStandardMaterial({ color: corDoElemento, roughness: 0.2 });
-                    const ligMesh = new THREE.Mesh(ligGeo, atomMatCustom);
-                    ligMesh.position.copy(targetPos);
-                    moleculeGroup.add(ligMesh);
-
-                    // Desenha o tubo da ligação química (Cilindro)
-                    const bondMesh = criarCilindroBond(new THREE.Vector3(0,0,0), targetPos, 0.08, 0xaaaaaa);
-                    moleculeGroup.add(bondMesh);
-
-                    // Soma as forças eletrônicas no vetor dipolo
-                    fX += dir.x; fY += dir.y; fZ += dir.z;
-                    ligantesDesenhados++;
-                } else {
-                    // IMPLEMENTAÇÃO NEON: Pares livres em formato oval com material imune a sombras (luz própria)
-                    const loneMesh = new THREE.Mesh(loneGeo, new THREE.MeshBasicMaterial({ color: 0xffb703, transparent: true, opacity: 0.65 }));
-                    
-                    // Alonga a esfera transformando-a em formato realista de balão/lobo eletrônico
-                    loneMesh.scale.set(1, 1.6, 1);
-                    loneMesh.position.copy(dir.clone().multiplyScalar(1.6));
-                    loneMesh.lookAt(dir.clone().multiplyScalar(4));
-                    loneMesh.rotateX(Math.PI / 2);
-                    moleculeGroup.add(loneMesh);
-
-                    // Repulsão dos pares livres afeta a polaridade
-                    fX -= dir.x * 0.4; fY -= dir.y * 0.4; fZ -= dir.z * 0.4;
-                }
+        function init() {
+            select.innerHTML = "";
+            vseprData.forEach((mol, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = `Nuvens: ${mol.steric} → Ligantes: ${mol.lig} | Livres: ${mol.lone} (${mol.name})`;
+                select.appendChild(opt);
             });
 
-            // IMPLEMENTAÇÃO DIPOLO: Renderiza a seta vermelha tridimensional se a geometria for Polar
-            const totalMagnitude = Math.sqrt(fX*fX + fY*fY + fZ*fZ);
-            // Lista rigorosa de geometrias polares da Teoria VSEPR
-            const geometriasPolares = ["Angular", "Piramidal Trigonal", "Gangorra", "Forma de T", "Pirâmide Quadrada", "Linear (Com 1 Par)", "Linear (Com 3 Pares)", "Linear (Com 4 Pares)", "Forma de T (Teórica)"];
-            
-            if (totalMagnitude > 0.1 && geometriasPolares.includes(data.name)) {
-                const vectorDirection = new THREE.Vector3(-fX, -fY, -fZ).normalize();
-                const dipoleArrow = new THREE.ArrowHelper(vectorDirection, new THREE.Vector3(0,0,0), 2.2, 0xff3333, 0.4, 0.18);
-                moleculeGroup.add(dipoleArrow);
-            }
-        }
-
-                // Função auxiliar que calcula a rotação e escala perfeita para desenhar os tubos de ligações
-        function criarCilindroBond(pA, pB, r, cor) {
-            const distance = new THREE.Vector3().subVectors(pB, pA);
-            const cylinderLength = distance.length();
-            const geometry = new THREE.CylinderGeometry(r, r, cylinderLength, 16);
-            const material = new THREE.MeshStandardMaterial({ color: cor, roughness: 0.4 });
-            const mesh = new THREE.Mesh(geometry, material);
-            
-            mesh.position.copy(pA).add(distance.multiplyScalar(0.5));
-            mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), distance.clone().normalize());
-            return mesh;
-        }
-
-        // IMPLEMENTAÇÃO: Criação dinâmica da Legenda Visual solicitada dentro da barra lateral
-        function injetarLegendaVisual() {
-            const painelInfo = document.getElementById("info-panel");
-            if (!painelInfo) return;
-            
+            // Geração automática da legenda visual solicitada
             const legendaHTML = `
                 <div style="margin-top:1.2rem; padding-top:0.6rem; border-top:1px dashed var(--border); display:flex; flex-wrap:wrap; gap:0.6rem;">
                     <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#9b5de5; border-radius:3px; margin-right:5px; display:inline-block;"></span> Central</div>
-                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#ffffff; border-radius:3px; margin-right:5px; display:inline-block;"></span> Hidrogênio (H)</div>
-                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#00b4d8; border-radius:3px; margin-right:5px; display:inline-block;"></span> Halogênio (Cl/F)</div>
-                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#ff4d4d; border-radius:3px; margin-right:5px; display:inline-block;"></span> Oxigênio (O)</div>
+                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#ffffff; border-radius:3px; margin-right:5px; display:inline-block;"></span> Hidrogênio</div>
+                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#00b4d8; border-radius:3px; margin-right:5px; display:inline-block;"></span> Halogênio</div>
+                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#ff4d4d; border-radius:3px; margin-right:5px; display:inline-block;"></span> Oxigênio</div>
                     <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#ffb703; border-radius:3px; margin-right:5px; display:inline-block;"></span> Par Neon</div>
-                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#ff3333; border-radius:3px; margin-right:5px; display:inline-block;"></span> Seta Dipolo (&mu;)</div>
+                    <div style="display:flex; align-items:center; font-size:0.8rem; color:var(--text-muted);"><span style="width:12px; height:12px; background:#ff3333; border-radius:3px; margin-right:5px; display:inline-block;"></span> Vetor Dipolo</div>
                 </div>`;
-            painelInfo.insertAdjacentHTML('beforeend', legendaHTML);
+            document.getElementById('info-panel').insertAdjacentHTML('beforeend', legendaHTML);
+
+            setupThreeJS();
+            updateModel(0);
+            
+            select.addEventListener('change', (e) => updateModel(e.target.value));
+            setupInteraction();
+            animate();
         }
 
-                // Configuração dos controles de arrastar com o dedo (Tablet) ou Mouse (PC)
-        function setupInteraction() {
-            let isDragging = false;
-            let previousMousePosition = { x: 0, y: 0 };
+        function setupThreeJS() {
+            scene = new THREE.Scene();
+            
+            // Foco em 9 afasta um pouco a visão e deixa a molécula menor e proporcional
+            camera = new THREE.PerspectiveCamera(45, container3d.clientWidth / container3d.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 9);
 
-            const onStart = (x, y) => { isDragging = true; previousMousePosition = { x, y }; };
-            const onMove = (x, y) => {
-                if (!isDragging) return;
-                const deltaX = x - previousMousePosition.x;
-                const deltaY = y - previousMousePosition.y;
+            const canvasElement = document.createElement('canvas');
+            canvasElement.id = "canvas3d";
+            canvasElement.style.width = "100%"; canvasElement.style.height = "100%";
+            canvasElement.style.minHeight = "450px"; canvasElement.style.display = "block";
+            document.getElementById('canvas3d').replaceWith(canvasElement);
 
-                moleculeGroup.rotation.y += deltaX * 0.01;
-                moleculeGroup.rotation.x += deltaY * 0.01;
-                previousMousePosition = { x, y };
-            };
+            renderer = new THREE.WebGLRenderer({ canvas: canvasElement, antialias: true, preserveDrawingBuffer: true });
+            renderer.setSize(container3d.clientWidth, container3d.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            canvasContainer.addEventListener('mousedown', (e) => onStart(e.clientX, e.clientY));
-            window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
-            window.addEventListener('mouseup', () => isDragging = false);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+            const light1 = new THREE.DirectionalLight(0xffffff, 0.8); light1.position.set(5, 5, 5); scene.add(light1);
+            const light2 = new THREE.DirectionalLight(0x4ea8de, 0.2); light2.position.set(-5, -5, 5); scene.add(light2);
 
-            canvasContainer.addEventListener('touchstart', (e) => {
-                if(e.touches.length === 1) onStart(e.touches[0].clientX, e.touches[0].clientY);
-            }, { passive: true });
-            window.addEventListener('touchmove', (e) => {
-                if(e.touches.length === 1) onMove(e.touches[0].clientX, e.touches[0].clientY);
-            }, { passive: true });
-            window.addEventListener('touchend', () => isDragging = false);
-
-            // Garante que o motor 3D recalcule o tamanho caso o tablet mude de posição (de pé ou deitado)
-            window.addEventListener('resize', () => {
-                camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight, false);
-            });
+            moleculeGroup = new THREE.Group();
+            scene.add(moleculeGroup);
         }
 
-        // Loop contínuo de animação que gera o efeito de rotação suave automática
-        function animate() {
-            requestAnimationFrame(animate);
-            if (!isDragging) {
-                moleculeGroup.rotation.y += 0.003;
+        function updateModel(index) {
+            const data = vseprData[index];
+            if (!data) return;
+            document.getElementById('val-geometria').textContent = data.name;
+            document.getElementById('val-angulo').textContent = data.angle;
+            document.getElementById('val-ligantes').textContent = data.lig;
+            document.getElementById('val-livres').textContent = data.lone;
+            document.getElementById('val-arranjo').textContent = data.arr;
+            document.getElementById('val-exemplo').textContent = data.ex;toast.textContent = Carregado: ${data.name}.;
+            toast.style.opacity = 1; setTimeout(() => toast.style.opacity = 0, 1500);
+            while(moleculeGroup.children.length > 0) moleculeGroup.remove(moleculeGroup.children);
+            // Átomo Central (Esfera Roxa)
+            const centralGeo = new THREE.SphereGeometry(0.45, 32, 32);
+            const centralMat = new THREE.MeshStandardMaterial({ color: 0x9b5de5, roughness: 0.1, metalness: 0.2 });
+            moleculeGroup.add(new THREE.Mesh(centralGeo, centralMat));
+            let fX = 0, fY = 0, fZ = 0;
+            // Átomos Conectados com Cores Customizadas Diferentesdata.coords.forEach((pos, idx) => {const vec = new THREE.Vector3(pos[0], pos[1], pos[2]);
+            fX += vec.x; 
+            fY += vec.y; 
+            fZ += vec.z;
+            const atomGeo = new THREE.SphereGeometry(0.32, 32, 32);
+            const atomMat = new THREE.MeshStandardMaterial({ color: data.atomColors[idx] || 0xffffff, roughness: 0.2 });
+            const atomMesh = new THREE.Mesh(atomGeo, atomMat);
+            atomMesh.position.copy(vec);
+            moleculeGroup.add(atomMesh);
+            moleculeGroup.add(criarCilindro(new THREE.Vector3(0,0,0), vec, 0.07, 0xaaaaaa));});
+            // IMPLEMENTAÇÃO NEON: Balões imunes a sombras com cor estável e luz própria
+            data.loneCoords.forEach(pos => {const vec = new THREE.Vector3(pos[0], pos[1], pos[2]);
+                                            fX -= vec.x * 0.4; 
+                                            fY -= vec.y * 0.4; 
+                                            fZ -= vec.z * 0.4;
+                                            const loneGeo = new THREE.SphereGeometry(0.25, 32, 32); 
+                                            loneGeo.scale(1, 1.5, 1);
+                                            const loneMat = new THREE.MeshBasicMaterial({ color: 0xffb703, transparent: true, opacity: 0.65 });
+                                            const loneMesh = new THREE.Mesh(loneGeo, loneMat);
+                                            loneMesh.position.copy(vec);
+                                            loneMesh.lookAt(vec.clone().multiplyScalar(2)); 
+                                            loneMesh.rotateX(Math.PI / 2);
+                                            moleculeGroup.add(loneMesh);});
+            // IMPLEMENTAÇÃO MOMENTO DE DIPOLO: Renderiza seta vermelha 3D em geometrias Polares
+            const mag = Math.sqrt(fXfX + fYfY + fZ*fZ);
+            const polares = ["Angular", "Piramidal Trigonal", "Gangorra", "Forma de T", "Piramidal Quadrada", "Linear (Diatômica)", "Linear (Com 1 Par)", "Linear (Com 3 Pares)", "Linear (Com 4 Pares)", "Forma de T (Teórica)"];
+            if (mag > 0.1 && polares.includes(data.name)) {const direcao = new THREE.Vector3(-fX, -fY, -fZ).normalize();
+                                                           moleculeGroup.add(new THREE.ArrowHelper(direcao, new THREE.Vector3(0,0,0), 1.8, 0xff3333, 0.35, 0.15));}}
+            function criarCilindro(pA, pB, r, cor) {
+                const direction = new THREE.Vector3().subVectors(pB, pA), len = direction.length();
+                const geo = new THREE.CylinderGeometry(r, r, len, 16), mat = new THREE.MeshStandardMaterial({ color: cor, roughness: 0.4 });
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.copy(pA).add(direction.multiplyScalar(0.5));
+                mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.clone().normalize());
+                return mesh;
             }
-            renderer.render(scene, camera);
-        }
-
-        // Variável de controle compartilhada com a interação
-        let isDragging = false;
-
-        // Dispara o simulador quando a página carrega por completo
-        window.onload = () => {
-            injetarLegendaVisual();
-            init();
-            selectEl.addEventListener('change', (e) => updateSimulation(e.target.value));
-        };
-    </script>
-</body>
-</html>
-
+            function setupInteraction() {
+                let isDragging = false, prevMouse = { x: 0, y: 0 };
+                const startMove = (x, y) => { isDragging = true; prevMouse = { x, y }; };
+                const move = (x, y) => {if (!isDragging) return;
+                                        moleculeGroup.rotation.y += (x - prevMouse.x) * 0.01;
+                                        moleculeGroup.rotation.x += (y - prevMouse.y) * 0.01;
+                                        prevMouse = { x, y };
+                                       };
+                container3d.addEventListener('mousedown', (e) => startMove(e.clientX, e.clientY));
+                window.addEventListener('mousemove', (e) => move(e.clientX, e.clientY));
+                window.addEventListener('mouseup', () => isDragging = false);
+                container3d.addEventListener('touchstart', (e) => {if(e.touches.length === 1) startMove(e.touches.clientX, e.touches.clientY);}, { passive: true });
+                window.addEventListener('touchmove', (e) => {if(e.touches.length === 1) move(e.touches.clientX, e.touches.clientY);}, { passive: true });
+                window.addEventListener('touchend', () => isDragging = false);
+                window.addEventListener('resize', () => {camera.aspect = container3d.clientWidth / container3d.clientHeight; 
+                                                         camera.updateProjectionMatrix();
+                                                         renderer.setSize(container3d.clientWidth, container3d.clientHeight);
+                                                        });
+            }
+            function animate() {
+                requestAnimationFrame(animate);
+                moleculeGroup.rotation.y += 0.003;
+                renderer.render(scene, camera);
+            }
+            window.onload = init;
 
