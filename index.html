@@ -562,7 +562,9 @@
 
             const netDipole = new THREE.Vector3(0, 0, 0);
 
-            if (bonds) {
+          if (bonds) {
+                const bondOrders = bonds.order || []; // Lê a ordem da ligação retornada pelo PubChem (1, 2, 3...)
+
                 for (let b = 0; b < bonds.aid1.length; b++) {
                     const idx1 = bonds.aid1[b] - 1;
                     const idx2 = bonds.aid2[b] - 1;
@@ -570,31 +572,51 @@
                     const pos1 = atomPositions[idx1].clone().sub(center).multiplyScalar(scaleFactor);
                     const pos2 = atomPositions[idx2].clone().sub(center).multiplyScalar(scaleFactor);
 
-                    const elem1 = atomElements[idx1];
-                    const elem2 = atomElements[idx2];
-
-                    const en1 = PAULING_EN[elem1] || PAULING_EN.DEFAULT;
-                    const en2 = PAULING_EN[elem2] || PAULING_EN.DEFAULT;
-
-                    const bondDir = new THREE.Vector3().subVectors(pos2, pos1);
-                    const deltaEN = en2 - en1;
-                    netDipole.add(bondDir.normalize().multiplyScalar(deltaEN));
+                    const order = bondOrders[b] || 1; // 1 = Simples, 2 = Dupla, 3 = Tripla
 
                     const distance = pos1.distanceTo(pos2);
-                    const bondGeo = new THREE.CylinderGeometry(0.06, 0.06, distance, 12);
-                    const bondMesh = new THREE.Mesh(bondGeo, bondMat);
-
-                    const midPoint = new THREE.Vector3().addVectors(pos1, pos2).multiplyScalar(0.5);
-                    bondMesh.position.copy(midPoint);
-
                     const dir = new THREE.Vector3().subVectors(pos2, pos1).normalize();
-                    bondMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+                    const midPoint = new THREE.Vector3().addVectors(pos1, pos2).multiplyScalar(0.5);
 
-                    moleculeGroup.add(bondMesh);
+                    // Vetor perpendicular para deslocar os cilindros paralelos em ligações duplas/triplas
+                    let perp = new THREE.Vector3(0, 1, 0);
+                    if (Math.abs(dir.y) > 0.9) perp.set(1, 0, 0);
+                    perp.crossVectors(dir, perp).normalize().multiplyScalar(0.12);
+
+                    // Define as posições dos cilindros dependendo da ordem da ligação
+                    let offsets = [new THREE.Vector3(0, 0, 0)];
+                    if (order === 2) {
+                        offsets = [perp.clone(), perp.clone().negate()];
+                    } else if (order >= 3) {
+                        offsets = [
+                            new THREE.Vector3(0, 0, 0),
+                            perp.clone(),
+                            perp.clone().negate()
+                        ];
+                    }
+
+                    // Renderiza cada cilindro (haste) da ligação
+                    offsets.forEach(offset => {
+                        const bondGeo = new THREE.CylinderGeometry(0.04, 0.04, distance, 12);
+                        const bondMesh = new THREE.Mesh(bondGeo, bondMat);
+
+                        bondMesh.position.copy(midPoint).add(offset);
+                        bondMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+
+                        moleculeGroup.add(bondMesh);
+                    });
+
+                    // Cálculo do vetor de momento dipolar com base na eletronegatividade
+                    const elem1 = atomElements[idx1];
+                    const elem2 = atomElements[idx2];
+                    const en1 = PAULING_EN[elem1] || PAULING_EN.DEFAULT;
+                    const en2 = PAULING_EN[elem2] || PAULING_EN.DEFAULT;
+                    
+                    const deltaEN = en2 - en1;
+                    netDipole.add(dir.clone().multiplyScalar(deltaEN));
                 }
             }
-
-            renderDipoleVector(netDipole);
+               renderDipoleVector(netDipole);
 
             // Preenchimento automático do painel de dados vindos da API PubChem
             const moleculeName = props.Title || props.IUPACName || "Composto PubChem";
