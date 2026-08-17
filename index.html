@@ -470,11 +470,13 @@
             moleculeGroup.add(neonLight);
         }
 
+        // 1. Busca integrada com API de Propriedades e Coordenadas 3D do PubChem
         async function fetchPubChemMolecule(query) {
             if (!query.trim()) return;
-            searchStatus.textContent = "Buscando no PubChem...";
+            searchStatus.textContent = "Buscando dados no PubChem...";
 
             try {
+                // Obter o CID (ID do Composto)
                 const cidRes = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(query)}/cids/JSON`);
                 const cidData = await cidRes.json();
 
@@ -485,8 +487,14 @@
 
                 const cid = cidData.IdentifierList.CID[0];
 
-                const recordRes = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/JSON?record_type=3d`);
+                // Buscar arquivo 3D e Propriedades Químicas simultaneamente
+                const [recordRes, propRes] = await Promise.all([
+                    fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/JSON?record_type=3d`),
+                    fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/property/MolecularFormula,MolecularWeight,IUPACName,Title/JSON`)
+                ]);
+
                 const recordData = await recordRes.json();
+                const propData = await propRes.json();
 
                 if (!recordData.PC_Compounds || !recordData.PC_Compounds[0]) {
                     searchStatus.textContent = "Estrutura 3D não disponível para este composto.";
@@ -494,7 +502,9 @@
                 }
 
                 const compound = recordData.PC_Compounds[0];
-                renderPubChem3D(compound, cid, query);
+                const properties = propData.PropertyTable?.Properties[0] || {};
+
+                renderPubChem3D(compound, cid, properties);
                 searchStatus.textContent = "Carregado com sucesso!";
 
             } catch (err) {
@@ -503,7 +513,8 @@
             }
         }
 
-        function renderPubChem3D(compound, cid, queryName) {
+        // 2. Renderização do modelo 3D + Preenchimento Automático do Painel
+        function renderPubChem3D(compound, cid, props) {
             while(moleculeGroup.children.length > 0){ 
                 moleculeGroup.remove(moleculeGroup.children[0]); 
             }
@@ -565,7 +576,6 @@
                     const en1 = PAULING_EN[elem1] || PAULING_EN.DEFAULT;
                     const en2 = PAULING_EN[elem2] || PAULING_EN.DEFAULT;
 
-                    // Vetor do átomo menos eletronegativo para o mais eletronegativo
                     const bondDir = new THREE.Vector3().subVectors(pos2, pos1);
                     const deltaEN = en2 - en1;
                     netDipole.add(bondDir.normalize().multiplyScalar(deltaEN));
@@ -586,17 +596,18 @@
 
             renderDipoleVector(netDipole);
 
-            valGeometria.textContent = queryName.toUpperCase();
-            valAngulo.textContent = "Geometria Real 3D";
-            valLigantes.textContent = `${atoms.aid.length} Átomos`;
-            valLivres.textContent = "Calculado via 3D";
-            valArranjo.textContent = "PubChem DB";
+            // Preenchimento automático do painel de dados vindos da API PubChem
+            const moleculeName = props.Title || props.IUPACName || "Composto PubChem";
+            valGeometria.textContent = moleculeName;
+            valAngulo.textContent = `${props.MolecularFormula || '-'} (${props.MolecularWeight ? props.MolecularWeight + ' g/mol' : '-'})`;
+            valLigantes.textContent = `${atoms.aid.length} Átomos / ${bonds ? bonds.aid1.length : 0} Ligações`;
+            valLivres.textContent = "Coordenadas Real 3D";
+            valArranjo.textContent = "PubChem API";
             valExemplo.textContent = `CID: ${cid}`;
 
-            showToast(`${queryName} (CID: ${cid})`);
+            showToast(`${moleculeName} (CID: ${cid})`);
         }
-
-        function showToast(msg) {
+            function showToast(msg) {
             toastEl.textContent = msg;
             toastEl.style.opacity = 1;
             setTimeout(() => { toastEl.style.opacity = 0; }, 2000);
